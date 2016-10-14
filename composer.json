@@ -1,0 +1,10 @@
+{
+    "require": {
+        "fabpot/goutte": "^3.1",
+        "simplon/mysql": "^1.3",
+        "symfony/process": "^3.1",
+        "jitsu/regex": "^0.1.1",
+        "druidvav/antigate-client": "^0.1.0"
+
+    }
+}
