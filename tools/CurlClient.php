@@ -4,6 +4,7 @@ namespace tools;
 use tools\ClientInterface;
 use tools\SymfonyParser;
 use Symfony\Component\DomCrawler\Link;
+use Symfony\Component\DomCrawler\Image;
 
 require 'ClientInterface.php';
 require 'SymfonyParser.php';
@@ -84,6 +85,7 @@ class CurlClient implements ClientInterface
 		array_map('unlink', glob("cookiefile/*"));
 		$ckfile = tempnam("cookiefile", "CURLCOOKIE");
         $useragent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.2 (KHTML, like Gecko) Chrome/5.0.342.3 Safari/533.2';
+
         $f = fopen('cookiefile/log.txt', 'w'); // file to write request 
 
 		curl_setopt($this->curl, CURLOPT_URL, $this->url);
@@ -144,13 +146,30 @@ class CurlClient implements ClientInterface
 			}
 		}
 
+		
+		if ($type === 'html') {
+			return $parser->filter($pattern)->html();
+		}
+
 		if ($type === 'attribute') {
 			$result = $parser->filter($pattern)->extract(array($attr));
+		}
+
+		if ($type === 'image') {
+			$nodes = $parser->find($pattern);
+			if (empty($nodes) === false) {
+				foreach ($nodes as $node) {
+					$link = new Image($node, $url, 'GET');
+					$result[] = $link->getUri();
+				}		
+			}
 		}
 
 		
 		return $result;
 	}
+
+	
 
 	public function getUserAgent()
 	{
